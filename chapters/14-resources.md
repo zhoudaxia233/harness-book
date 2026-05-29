@@ -16,6 +16,8 @@
 - Claude Code hooks：[code.claude.com/docs/en/hooks](https://code.claude.com/docs/en/hooks)
 - Claude Code skills：[code.claude.com/docs/en/skills](https://code.claude.com/docs/en/skills)
 - Claude Code subagents：[code.claude.com/docs/en/sub-agents](https://code.claude.com/docs/en/sub-agents)
+- Claude Code workflows：[code.claude.com/docs/en/workflows](https://code.claude.com/docs/en/workflows)
+- Pi dynamic workflows prototype：[Michaelliv/pi-dynamic-workflows](https://github.com/Michaelliv/pi-dynamic-workflows)
 - Codex CLI docs：[developers.openai.com/codex/cli](https://developers.openai.com/codex/cli)
 - Codex security docs：[developers.openai.com/codex/security](https://developers.openai.com/codex/security)
 - Codex AGENTS.md docs：[developers.openai.com/codex/guides/agents-md](https://developers.openai.com/codex/guides/agents-md)
@@ -94,6 +96,7 @@ Claude Code 闭源部分不能瞎猜，但官方文档很适合看产品化边�
 - 不要说“context window 就是 memory”。context 是当前输入预算；memory 是外部持久化、摘要、检索或规则注入。
 - 不要说“MCP 让工具安全”。MCP 是协议，不是安全策略。
 - 不要说“subagent 必然更强”。subagent 提供隔离和并行，也带来协调成本。
+- 不要把 dynamic workflow 说成另一种 subagent。subagent 是执行单元；workflow 是控制流。
 - 不要把闭源产品内部说死。除非有官方文档或源码证据，否则用“可观察行为”和“设计推断”。
 
 ## 最后的检查清单
@@ -107,6 +110,7 @@ Claude Code 闭源部分不能瞎猜，但官方文档很适合看产品化边�
 - 为什么 patch 比 write_file 更适合真实项目？
 - sandbox 和 approval 分别解决什么问题？
 - agent 如何验证自己没搞坏？
+- dynamic workflow 和普通 subagent flow 的差异是什么？
 - Claude Code / Codex / Pi 的差异是产品取舍，不是简单强弱。
 - 如果你要做自己的 harness，第一版该删掉哪些野心？
 

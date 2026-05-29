@@ -54,7 +54,7 @@ footer{max-width:780px;margin:4rem auto;padding:2rem 28px;border-top:1px solid v
 <li><a href="#ch09-权限、沙箱与安全边界"><span>§9</span>权限、沙箱与安全边界</a></li>
 <li><a href="#ch10-验证与错误恢复失败不是异常是主路径"><span>§10</span>验证与错误恢复：失败不是异常，是主路径</a></li>
 <li><a href="#ch11-产品化界面claude-code-codex-pi-的可观察差异"><span>§11</span>产品化界面：Claude Code / Codex / Pi 的可观察差异</a></li>
-<li><a href="#ch12-扩展层mcp、hooks、skills、subagents"><span>§12</span>扩展层：MCP、hooks、skills、subagents</a></li>
+<li><a href="#ch12-扩展层mcp、hooks、skills、subagents、workflows"><span>§12</span>扩展层：MCP、hooks、skills、subagents、workflows</a></li>
 <li><a href="#ch13-做出差异化"><span>§13</span>做出差异化</a></li>
 <li><a href="#ch14-进阶资源读完不是终点"><span>§14</span>进阶资源：读完不是终点</a></li></ol></nav>
   <main class="manuscript"><section class="chapter" id="ch00-写在前面为什么不是“聊天机器人写代码”"><div class="chapter-head"><span class="chapter-num">§ 0</span><h2>写在前面：为什么不是“聊天机器人写代码”</h2></div>
@@ -1032,8 +1032,8 @@ return fail(&quot;verification still failing after max attempts&quot;)</code></p
 <li>Claude Code: overview、how it works、settings、permissions、MCP、skills、subagents 文档</li>
 </ul>
 </section>
-<section class="chapter" id="ch12-扩展层mcp、hooks、skills、subagents"><div class="chapter-head"><span class="chapter-num">§ 12</span><h2>扩展层：MCP、hooks、skills、subagents</h2></div>
-<p>当读者已经理解 tools、context、session、policy 之后，再讲 MCP、hooks、skills、subagents 才不会乱。它们不是 agent 本体，而是 harness 的扩展层。</p>
+<section class="chapter" id="ch12-扩展层mcp、hooks、skills、subagents、workflows"><div class="chapter-head"><span class="chapter-num">§ 12</span><h2>扩展层：MCP、hooks、skills、subagents、workflows</h2></div>
+<p>当读者已经理解 tools、context、session、policy 之后，再讲 MCP、hooks、skills、subagents、workflows 才不会乱。它们不是 agent 本体，而是 harness 的扩展层。</p>
 <figure class="fig">
 <div class="svg-scroll">
 <svg viewBox="0 0 820 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Extension layers">
@@ -1043,11 +1043,12 @@ return fail(&quot;verification still failing after max attempts&quot;)</code></p
 <rect class="r" x="260" y="135" width="130" height="70"/><text class="t" x="325" y="166" text-anchor="middle">MCP</text><text class="s" x="325" y="188" text-anchor="middle">外部工具协议</text>
 <rect class="r" x="410" y="135" width="130" height="70"/><text class="t" x="475" y="166" text-anchor="middle">Hooks</text><text class="s" x="475" y="188" text-anchor="middle">生命周期拦截</text>
 <rect class="r" x="560" y="135" width="130" height="70"/><text class="t" x="625" y="166" text-anchor="middle">Skills</text><text class="s" x="625" y="188" text-anchor="middle">知识和流程包</text>
-<rect class="r" x="335" y="250" width="150" height="70"/><text class="t" x="410" y="281" text-anchor="middle">Subagents</text><text class="s" x="410" y="303" text-anchor="middle">独立上下文的代理调用</text>
-<path d="M410 98 L175 135 M410 98 L325 135 M410 98 L475 135 M410 98 L625 135 M410 205 L410 250" stroke="#9f351e" fill="none"/>
+<rect class="r" x="250" y="250" width="145" height="70"/><text class="t" x="322" y="281" text-anchor="middle">Subagents</text><text class="s" x="322" y="303" text-anchor="middle">独立上下文的代理调用</text>
+<rect class="r" x="430" y="250" width="145" height="70"/><text class="t" x="502" y="281" text-anchor="middle">Workflows</text><text class="s" x="502" y="303" text-anchor="middle">代码化的多代理编排</text>
+<path d="M410 98 L175 135 M410 98 L325 135 M410 98 L475 135 M410 98 L625 135 M410 205 L322 250 M410 205 L502 250" stroke="#9f351e" fill="none"/>
 </svg>
 </div>
-<figcaption>FIG 12·1 扩展层级。MCP、hooks、skills、subagents 是 core harness 之上的不同扩展方式。</figcaption>
+<figcaption>FIG 12·1 扩展层级。MCP、hooks、skills、subagents、workflows 是 core harness 之上的不同扩展方式。</figcaption>
 </figure>
 <h3 class="section">MCP：工具和上下文的协议边界</h3>
 <p>MCP 的价值是把外部系统以标准方式暴露给 agent：文件、数据库、Issue tracker、文档、设计工具、内部 API。它解决“怎么发现和调用外部能力”的问题。</p>
@@ -1084,6 +1085,60 @@ return fail(&quot;verification still failing after max attempts&quot;)</code></p
 <li>返回摘要可能丢细节。</li>
 </ul>
 <div class="callout warn"><span class="label">常见误区</span><p>subagent 不是“多了一个大脑所以必然更强”。它主要换来隔离和并行，也带来协调损耗。</p></div>
+<h3 class="section">Dynamic workflows：把协调从上下文挪到代码</h3>
+<p>dynamic workflow 容易被误解成“更高级的 subagent”。更准确地说：</p>
+<div class="code"><div class="label"><span>text</span></div><pre><code>subagent 是执行单元；workflow 是控制流。</code></pre></div>
+<p>普通 subagent 模式像主 agent 管一个小团队。它在自己的上下文里写计划、派人、接收结果、决定下一步。任务一大，主 agent 要记住哪些子任务已经跑过、哪些结果要复核、哪些分支失败、最后如何合并。计划虽然写在对话里，但仍然依赖模型每一轮都真的照做。</p>
+<p>dynamic workflow 把这件事换成另一种形态：主 agent 先写一段可执行脚本，然后把协调权交给 workflow runtime。代码负责循环、并行、等待、阶段切换和结果收集；subagent 仍然负责模糊判断、读代码、跑工具、产出结论。</p>
+<figure class="fig">
+<div class="svg-scroll">
+<svg viewBox="0 0 860 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Subagents versus workflows">
+<style>.box{fill:#fffaf0;stroke:#17130d;stroke-width:1.2}.hot{fill:#f0e6d2;stroke:#9f351e;stroke-width:1.3}.t{font:600 14px serif;fill:#17130d}.s{font:12px sans-serif;fill:#665a49}.a{stroke:#9f351e;stroke-width:1.4;fill:none;marker-end:url(#m)}</style>
+<defs><marker id="m" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#9f351e"/></marker></defs>
+<rect class="hot" x="55" y="45" width="220" height="70"/><text class="t" x="165" y="75" text-anchor="middle">普通 subagents</text><text class="s" x="165" y="96" text-anchor="middle">计划留在主 agent 上下文</text>
+<rect class="box" x="55" y="160" width="95" height="55"/><text class="s" x="102" y="193" text-anchor="middle">agent A</text>
+<rect class="box" x="165" y="160" width="95" height="55"/><text class="s" x="212" y="193" text-anchor="middle">agent B</text>
+<rect class="box" x="275" y="160" width="95" height="55"/><text class="s" x="322" y="193" text-anchor="middle">agent C</text>
+<path class="a" d="M165 115 L102 160 M165 115 L212 160 M165 115 L322 160"/>
+<text class="s" x="215" y="255" text-anchor="middle">主 agent 每轮决定下一步，结果不断回到上下文</text>
+<rect class="hot" x="500" y="45" width="240" height="70"/><text class="t" x="620" y="75" text-anchor="middle">dynamic workflow</text><text class="s" x="620" y="96" text-anchor="middle">计划变成脚本控制流</text>
+<rect class="box" x="512" y="142" width="215" height="55"/><text class="s" x="620" y="175" text-anchor="middle">workflow runtime</text>
+<rect class="box" x="455" y="240" width="95" height="55"/><text class="s" x="502" y="273" text-anchor="middle">agent A</text>
+<rect class="box" x="575" y="240" width="95" height="55"/><text class="s" x="622" y="273" text-anchor="middle">agent B</text>
+<rect class="box" x="695" y="240" width="95" height="55"/><text class="s" x="742" y="273" text-anchor="middle">agent C</text>
+<path class="a" d="M620 115 L620 142 M620 197 L502 240 M620 197 L622 240 M620 197 L742 240"/>
+</svg>
+</div>
+<figcaption>FIG 12·2 subagent 是工人；workflow 是用代码写出来的调度器。它调用 subagents，但它自己解决的是控制流问题。</figcaption>
+</figure>
+<p>抽象成代码，普通 subagent 协调大概是这样：</p>
+<div class="code"><div class="label"><span>ts</span></div><pre><code>while (!done) {
+  const next = await model(parentContext);
+  const result = await spawnSubagent(next.prompt);
+  parentContext.push(result);
+}</code></pre></div>
+<p>这里的控制流在 <code class="inl">model(parentContext)</code>。主 agent 每一轮都要从上下文里恢复计划、检查进度、决定下一步。</p>
+<p>dynamic workflow 则更像这样：</p>
+<div class="code"><div class="label"><span>ts</span></div><pre><code>const script = await model(parentContext);
+const result = await workflowRuntime.execute(script);
+parentContext.push(compact(result));</code></pre></div>
+<p>workflow runtime 的核心也不神秘：</p>
+<div class="code"><div class="label"><span>ts</span></div><pre><code>async function execute(script) {
+  const api = {
+    agent: (prompt) =&gt; runFreshSubagentSession(prompt),
+    parallel: (tasks) =&gt; Promise.all(tasks.map((task) =&gt; task())),
+    phase: (name) =&gt; progress.currentPhase = name,
+  };
+
+  return runJavaScriptInSandbox(script, api);
+}</code></pre></div>
+<p>模型负责生成调度程序；程序负责可靠地执行调度；subagents 负责每个子任务里的判断。</p>
+<div class="callout mental"><span class="label">心智模型</span><p>dynamic workflow 的本质，是把“主 agent 在上下文里协调团队”，改成“主 agent 生成一段协调团队的程序”。程序负责可控性，agent 负责模糊判断。</p></div>
+<p>这并不会消灭所有不确定性。workflow 只能降低协调层的不确定性：循环、并发、等待、汇总更可靠了。但主 agent 可能写出糟糕脚本，subagent 也仍然可能看错代码、误判结果、遗漏证据。</p>
+<p>以 <code class="inl">pi-dynamic-workflows</code> 为例，它给 Pi 注册了一个 <code class="inl">workflow</code> tool。主模型把 JavaScript 脚本传给这个工具；工具用 AST 做元数据校验，再在 Node <code class="inl">vm</code> sandbox 里执行脚本。脚本能调用 <code class="inl">agent()</code>、<code class="inl">parallel()</code>、<code class="inl">pipeline()</code>、<code class="inl">phase()</code>、<code class="inl">log()</code>，但不能直接 <code class="inl">import</code>、<code class="inl">require</code>、读 <code class="inl">fs</code> 或访问网络。每次 <code class="inl">agent()</code> 会创建一个新的 in-memory Pi subagent session，并给它标准 coding tools。</p>
+<p>所以这个 prototype 里：</p>
+<div class="code"><div class="label"><span>text</span></div><pre><code>workflow runtime = workflow tool 里的脚本执行器 + 进度状态 + subagent runner</code></pre></div>
+<p>它不是操作系统 daemon。它只是一次 tool call 内部的运行时。成熟产品可以把同一个概念做成后台任务、可暂停运行、可保存 workflow、可在 UI 里看进度，但核心逻辑仍然是“代码化编排 subagents”。</p>
 <h3 class="section">扩展选择表</h3>
 <table>
 <thead><tr><th>你要解决的问题</th><th>优先考虑</th><th>原因</th></tr></thead>
@@ -1092,6 +1147,7 @@ return fail(&quot;verification still failing after max attempts&quot;)</code></p
 <tr><td>每次编辑后跑 formatter</td><td>hook</td><td>确定性生命周期动作</td></tr>
 <tr><td>团队固定 review 流程</td><td>skill / command</td><td>打包知识和步骤</td></tr>
 <tr><td>长任务拆成独立调查</td><td>subagent</td><td>隔离上下文、并行</td></tr>
+<tr><td>大任务需要分阶段、并行、复核、汇总</td><td>dynamic workflow</td><td>把协调层从上下文挪到代码控制流</td></tr>
 <tr><td>只是跑一个 CLI</td><td>shell + README</td><td>不要过早上协议</td></tr>
 </tbody>
 </table>
@@ -1099,6 +1155,7 @@ return fail(&quot;verification still failing after max attempts&quot;)</code></p
 <ul class="list">
 <li>Pi: <code class="inl">src/core/extensions/</code>、<code class="inl">docs/extensions.md</code>、<code class="inl">examples/extensions/</code></li>
 <li>Pi: <code class="inl">docs/skills.md</code></li>
+<li>Pi dynamic workflows: <code class="inl">src/workflow.ts</code>、<code class="inl">src/workflow-tool.ts</code>、<code class="inl">src/agent.ts</code></li>
 <li>Claude Code: MCP、hooks、skills、subagents 文档</li>
 <li>Codex: skills、plugins、hooks、MCP、subagents、AGENTS.md 文档</li>
 </ul>
@@ -1222,6 +1279,8 @@ return fail(&quot;verification still failing after max attempts&quot;)</code></p
 <li>Claude Code hooks：<a class="link" href="https://code.claude.com/docs/en/hooks">code.claude.com/docs/en/hooks</a></li>
 <li>Claude Code skills：<a class="link" href="https://code.claude.com/docs/en/skills">code.claude.com/docs/en/skills</a></li>
 <li>Claude Code subagents：<a class="link" href="https://code.claude.com/docs/en/sub-agents">code.claude.com/docs/en/sub-agents</a></li>
+<li>Claude Code workflows：<a class="link" href="https://code.claude.com/docs/en/workflows">code.claude.com/docs/en/workflows</a></li>
+<li>Pi dynamic workflows prototype：<a class="link" href="https://github.com/Michaelliv/pi-dynamic-workflows">Michaelliv/pi-dynamic-workflows</a></li>
 <li>Codex CLI docs：<a class="link" href="https://developers.openai.com/codex/cli">developers.openai.com/codex/cli</a></li>
 <li>Codex security docs：<a class="link" href="https://developers.openai.com/codex/security">developers.openai.com/codex/security</a></li>
 <li>Codex AGENTS.md docs：<a class="link" href="https://developers.openai.com/codex/guides/agents-md">developers.openai.com/codex/guides/agents-md</a></li>
@@ -1289,6 +1348,7 @@ return fail(&quot;verification still failing after max attempts&quot;)</code></p
 <li>不要说“context window 就是 memory”。context 是当前输入预算；memory 是外部持久化、摘要、检索或规则注入。</li>
 <li>不要说“MCP 让工具安全”。MCP 是协议，不是安全策略。</li>
 <li>不要说“subagent 必然更强”。subagent 提供隔离和并行，也带来协调成本。</li>
+<li>不要把 dynamic workflow 说成另一种 subagent。subagent 是执行单元；workflow 是控制流。</li>
 <li>不要把闭源产品内部说死。除非有官方文档或源码证据，否则用“可观察行为”和“设计推断”。</li>
 </ul>
 <h3 class="section">最后的检查清单</h3>
@@ -1301,6 +1361,7 @@ return fail(&quot;verification still failing after max attempts&quot;)</code></p
 <li>为什么 patch 比 write_file 更适合真实项目？</li>
 <li>sandbox 和 approval 分别解决什么问题？</li>
 <li>agent 如何验证自己没搞坏？</li>
+<li>dynamic workflow 和普通 subagent flow 的差异是什么？</li>
 <li>Claude Code / Codex / Pi 的差异是产品取舍，不是简单强弱。</li>
 <li>如果你要做自己的 harness，第一版该删掉哪些野心？</li>
 </ul>

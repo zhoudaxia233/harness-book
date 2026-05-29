@@ -23,7 +23,7 @@
 | 9 | 权限、沙箱与安全边界 |
 | 10 | 验证与错误恢复 |
 | 11 | 产品化界面：Claude Code / Codex / Pi 的可观察差异 |
-| 12 | 扩展层：MCP、hooks、skills、subagents |
+| 12 | 扩展层：MCP、hooks、skills、subagents、workflows |
 | 13 | 做出差异化 |
 | 14 | 进阶资源 |
 
